@@ -11,7 +11,7 @@ load_dotenv()
 
 import dj_database_url
 
-REDIS_URL = os.environ.get("REDIS_URL", "redis://127.0.0.1:6379/0") 
+REDIS_URL = os.environ.get("REDIS_URL")
 
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY", None)
 
@@ -94,9 +94,9 @@ ROOT_URLCONF = 'app_server.urls'
 
 CHANNEL_LAYERS = {
     "default": {
-        "BACKEND": "channels_redis.pubsub.RedisPubSubChannelLayer",
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [("127.0.0.1", 6379)], 
+            "hosts": [os.environ.get("REDIS_URL")],
         },
     },
 }
