@@ -23,7 +23,7 @@ FINETUNED_MODEL_ID = None
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
-SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-o51sdqp4+z@uj02rjcn-&8&8mguv*aah@cgu&0ep9i2-jk$j%3')
+SECRET_KEY = os.environ.get('SECRET_KEY')
 # SECURITY WARNING: keep the secret key used in production secret!
 # SECRET_KEY 재정의하는 중복 코드를 제거합니다.
 
