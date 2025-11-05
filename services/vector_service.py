@@ -9,7 +9,7 @@ from typing import List, Dict, Any, Optional
 
 # PostgreSQL 접속 정보
 # Render 환경 변수에서 가져오는 것을 가정
-DATABASE_URL = os.environ.get("DATABASE_URL", "postgresql://user:password@host:port/dbname")
+DATABASE_URL = os.environ.get("DATABASE_URL")
 # 임베딩 함수는 ChromaDB에서와 동일하게 OpenAI를 사용합니다.
 OPENAI_EF_MODEL = "text-embedding-3-small"
 
