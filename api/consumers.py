@@ -276,7 +276,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 if content:
                     full_ai_response += content
                     
-                    print(f"--- [디버그 6] 스트림 청크 수신: {content[:10].strip()}... ---")
+                    # 개행 없이 한 줄에 이어서 디버그 출력
+                    sys.stdout.write(content.strip())
+                    sys.stdout.flush()
 
                     await self.send(text_data=json.dumps({
                         'type': 'chat_stream',
