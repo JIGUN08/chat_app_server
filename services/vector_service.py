@@ -162,3 +162,19 @@ def query_similar_messages(table_name: str, query_text: str, user_id: int, n_res
     except Exception as e:
         print(f"--- [PostgreSQL] Error querying table: {e} ---")
         return filtered_results
+
+def get_or_create_collection(collection_name: str) -> None:
+    """
+    외부 인터페이스 (예: Django Channels Consumer)에서 예상하는 함수명입니다.
+    실제로는 벡터 저장용 PostgreSQL 테이블이 있는지 확인하고 생성합니다.
+    """
+    # 테이블 이름은 collection_name을 따르도록 설정
+    setup_vector_table(table_name=collection_name)
+    print(f"--- [Vector Service] Collection/Table '{collection_name}' checked/created. ---")
+
+
+def add_documents_to_collection(collection_name: str, chat_message: Any) -> None:
+    """
+    외부 인터페이스를 위해 ChromaDB의 add와 유사하게 구현합니다.
+    """
+    upsert_message(table_name=collection_name, chat_message=chat_message)
