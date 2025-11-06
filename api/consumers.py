@@ -302,6 +302,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             await self.send(text_data=json.dumps({"type": "error", "message": full_ai_response}))
 
         except Exception as e: # 👈 이 부분을 추가합니다.
+            full_ai_response = None
             print(f"--- [치명적 오류] 스트리밍 후처리(감정 분석/저장) 중 예외 발생: {e} ---")
             # 예외가 발생해도 메시지 저장은 시도하지 않음
             return # 함수를 종료하고 receive로 돌아감
