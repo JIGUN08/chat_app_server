@@ -57,12 +57,12 @@ class EmotionAnalyzer:
             """
 
             response = client.chat.completions.create(
-                model="gpt-3.5-turbo",
+                model="gpt-4o-mini",
                 messages=[
                     {"role": "system", "content": "당신은 한국어 감정 분석 전문가입니다."},
                     {"role": "user", "content": prompt}
                 ],
-                temperature=0.2,
+                temperature=0.7,
                 response_format={"type": "json_object"},
             )
 
