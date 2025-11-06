@@ -1,4 +1,4 @@
-#emotion_service.py
+# emotion_service.py (클린 버전)
 import os
 import json
 import re
@@ -54,7 +54,7 @@ class EmotionAnalyzer:
               {{"label": "5", "score": 0.10}},
               {{"label": "6", "score": 0.05}}
             ]}}
-            """
+            """
 
             response = client.chat.completions.create(
                 model="gpt-3.5-turbo",
@@ -69,8 +69,8 @@ class EmotionAnalyzer:
             result_text = response.choices[0].message.content.strip()
 
             try:
-                # JSON 객체 전체를 파싱
-                full_result = json.loads(result_text)
+                # JSON 객체 전체를 파싱
+                full_result = json.loads(result_text)
                 # 여기서 배열만 추출
                 emotion_scores = full_result.get("emotion_scores", [])
                 return emotion_scores
