@@ -145,8 +145,10 @@ def _assemble_context_data(user, user_message_text, latitude=None, longitude=Non
     # 2. 벡터 검색 컨텍스트 (이미지가 없을 때만 수행)
     if not has_image:
         try:
-            collection = vector_service.get_or_create_collection()
-            similar_results = vector_service.query_similar_messages(collection, user_message_text, user.id, n_results=5)
+            COLLECTION_NAME = f"user_{user.id}_chat_history"
+            collection = vector_service.get_or_create_collection(COLLECTION_NAME)
+            similar_results = vector_service.query_similar_messages(COLLECTION_NAME, user_message_text, user.id, n_results=5)
+            
             if similar_results and isinstance(similar_results, dict) and similar_results.get('documents'):
                 past_conversations = [f"{meta.get('speaker', '알수없음')}: {doc}" for doc, meta in zip(similar_results['documents'], similar_results['metadatas'])]
                 contexts['vector_search'] = "[과거 유사한 대화 내용(벡터DB)]: " + " | ".join(past_conversations)
@@ -329,15 +331,15 @@ def _finalize_chat_interaction(request, user_message_text, response_json, histor
     except Exception as e:
         explanation = f"예상치 못한 오류 발생: {e}"
 
-    # ChromaDB 컬렉션 가져오기
-    collection = vector_service.get_or_create_collection()
+    COLLECTION_NAME = f"user_{user.id}_chat_history"
+    collection = vector_service.get_or_create_collection(COLLECTION_NAME)
 
     # ChatMessage 저장 시 image_file을 직접 사용
     user_message_obj = ChatMessage.objects.create(user=user, message=user_message_text, image=image_file, is_user=True)
-    vector_service.upsert_message(collection, user_message_obj)
+    vector_service.upsert_message(COLLECTION_NAME, user_message_obj)
 
     bot_message_obj = ChatMessage.objects.create(user=user, message=bot_message_text, is_user=False)
-    vector_service.upsert_message(collection, bot_message_obj)
+    vector_service.upsert_message(COLLECTION_NAME, bot_message_obj)
     
     recent_history_for_extraction = history[:5]
     extract_and_save_user_context_data(user, user_message_text, bot_message_text, recent_history_for_extraction, api_key)
