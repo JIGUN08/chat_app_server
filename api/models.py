@@ -15,7 +15,7 @@ class UserProfile(models.Model):
     """
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='profile')
     is_onboarding_complete = models.BooleanField(default=False, help_text="사용자 초기 설정(온보딩) 완료 여부")
-    affinity_score = models.IntegerField(default=0, help_text="AI '아이'와의 호감도 점수")
+    affinity_score = models.IntegerField(default=70, help_text="AI '아이'와의 호감도 점수")
     memory = models.JSONField(default=dict, help_text="사용자에 대한 기억 저장소")
     chatbot_name = models.CharField(max_length=100, default='아이', help_text="사용자가 지정한 챗봇 이름")
 
