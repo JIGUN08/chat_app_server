@@ -70,17 +70,17 @@ class EmotionAnalyzer:
 
             try:
                 # JSON 객체 전체를 파싱
-                full_result = json.loads(result_text) 
+                full_result = json.loads(result_text)
                 # 여기서 배열만 추출
                 emotion_scores = full_result.get("emotion_scores", [])
-                return emotion_scores # 배열 반환
+                return emotion_scores
             except json.JSONDecodeError:
                 print(f"--- Invalid GPT response format (JSON mode failed): {result_text} ---")
                 return []
         except Exception as e:
             # API 호출 중 발생할 수 있는 다른 예외 처리 (예: API 키 문제, 네트워크 오류 등)
             print(f"--- [에러] API 호출 중 문제가 발생했습니다: {e} ---")
-            return []    
+            return []
 
 # ✅ Django 앱 로드 시 1회만 인스턴스 생성
 emotion_analyzer_instance = EmotionAnalyzer()
