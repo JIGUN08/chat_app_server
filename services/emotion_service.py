@@ -43,18 +43,18 @@ class EmotionAnalyzer:
             문장: "{text}"
 
             각 감정에 대해 확률처럼 보이는 점수를 부여한 뒤,
-            아래 JSON 배열 형식으로 출력하세요.
-            예시:
-            [
-              {{"label": "0", "score": 0.05}},
-              {{"label": "1", "score": 0.12}},
-              {{"label": "2", "score": 0.08}},
-              {{"label": "3", "score": 0.20}},
-              {{"label": "4", "score": 0.40}},
-              {{"label": "5", "score": 0.10}},
-              {{"label": "6", "score": 0.05}}
-            ]
-            """
+            반드시 아래 JSON **객체** 형식으로 출력하세요.
+            예시:
+            {{"emotion_scores": [
+              {{"label": "0", "score": 0.05}},
+              {{"label": "1", "score": 0.12}},
+              {{"label": "2", "score": 0.08}},
+              {{"label": "3", "score": 0.20}},
+              {{"label": "4", "score": 0.40}},
+              {{"label": "5", "score": 0.10}},
+              {{"label": "6", "score": 0.05}}
+            ]}}
+            """
 
             response = client.chat.completions.create(
                 model="gpt-3.5-turbo",
@@ -69,7 +69,11 @@ class EmotionAnalyzer:
             result_text = response.choices[0].message.content.strip()
 
             try:
-                emotion_scores = json.loads(result_text) # ✅ result_text 전체를 파싱 시도
+                # JSON 객체 전체를 파싱
+                full_result = json.loads(result_text) 
+                # 여기서 배열만 추출
+                emotion_scores = full_result.get("emotion_scores", [])
+                return emotion_scores # 배열 반환
             except json.JSONDecodeError:
                 print(f"--- Invalid GPT response format (JSON mode failed): {result_text} ---")
                 return []
