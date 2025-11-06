@@ -300,8 +300,12 @@ class ChatConsumer(AsyncWebsocketConsumer):
             full_ai_response = f"AI 연결 오류가 발생했습니다. 잠시 후 다시 시도해 주세요."
             print(f"--- [오류] GPT API 오류: {e} ---")
             await self.send(text_data=json.dumps({"type": "error", "message": full_ai_response}))
-        
-        
+
+        except Exception as e: # 👈 이 부분을 추가합니다.
+            print(f"--- [치명적 오류] 스트리밍 후처리(감정 분석/저장) 중 예외 발생: {e} ---")
+            # 예외가 발생해도 메시지 저장은 시도하지 않음
+            return # 함수를 종료하고 receive로 돌아감
+                
         # 4. 메시지 저장 및 메모리 추출 (DB 접근)
         if full_ai_response and full_ai_response != "AI 연결 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.":
             await finalize_and_save_messages_sync(
