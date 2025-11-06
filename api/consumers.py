@@ -83,12 +83,6 @@ def get_location_recommendation_sync(user, message, latitude, longitude):
     # 🚨 location_service.py에 정의된 동기 함수 호출
     return location_service.get_location_based_recommendation(user, message, latitude, longitude)
 
-@database_sync_to_async
-def get_or_create_collection_sync(user_id):
-    """벡터 서비스의 get_or_create_collection을 비동기적으로 호출합니다."""
-    COLLECTION_NAME = f"user_{user_id}_chat_history"
-    vector_service.get_or_create_collection(COLLECTION_NAME)
-    return COLLECTION_NAME # 생성된 컬렉션 이름을 반환
 
 # ----------------------------------------------------
 # 메인 Consumer
@@ -129,6 +123,12 @@ class ChatConsumer(AsyncWebsocketConsumer):
             await asyncio.sleep(self.INACTIVITY_TIMEOUT) 
 
             print(f"--- [DEBUG] 타이머 만료, 동적 능동형 메시지 생성 요청 ---")
+            
+            COLLECTION_NAME = f"user_{self.user.id}_chat_history"
+            try:
+                await database_sync_to_async(vector_service.get_or_create_collection)(COLLECTION_NAME)
+            except Exception as e:
+                print(f"--- [오류] 벡터 컬렉션 준비 중 예외 발생: {e} ---") 
             
             # 🚨 1. LLM을 호출하여 동적 메시지와 감정 획득 (get_inactivity_message_sync 사용)
             message_text, emotion_label = await get_inactivity_message_sync(self.user)
@@ -230,19 +230,14 @@ class ChatConsumer(AsyncWebsocketConsumer):
         # 0. 이모티콘 파싱 및 컨텍스트/히스토리 수집
         history = await get_user_chat_history(self.user)
 
-        # ✅ 0-0. 벡터 컬렉션(테이블) 생성/확인 및 이름 획득
+        COLLECTION_NAME = f"user_{self.user.id}_chat_history"
+
         try:
-            COLLECTION_NAME = await get_or_create_collection_sync(self.user.id)
+            await database_sync_to_async(vector_service.get_or_create_collection)(COLLECTION_NAME)
             print(f"--- [DEBUG] 벡터 컬렉션 이름 확보: {COLLECTION_NAME} ---")
             
-            # 🚨 Note: 만약 벡터 검색이 _assemble_context_data 내부에서 일어난다면,
-            # _assemble_context_data 함수의 시그니처에 COLLECTION_NAME을 추가해야 할 수도 있습니다.
-            # 지금은 오류를 없애기 위해 이 위치에서 호출합니다.
-            
         except Exception as e:
-            # 기존 로그에서 오류가 발생하던 위치이므로, 오류 메시지를 수정합니다.
-            print(f"--- 벡터 검색 컨텍스트 생성 오류: {e} ---") 
-            # 오류가 발생해도 진행할 수 있도록 return 하지 않습니다.
+            print(f"--- [오류] 벡터 컬렉션 준비 중 예외 발생: {e} ---")
         
         # ✅ 0-1. 이모티콘 파싱을 동기적으로 처리
         user_message_for_llm = await database_sync_to_async(
