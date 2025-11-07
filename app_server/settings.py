@@ -160,11 +160,11 @@ CELERY_IMPORTS = (
     'api.tasks', # 'api' 앱의 tasks.py 파일을 명시적으로 가져옵니다.
 )
 
-CELERY_TIMEZONE = 'Asia/Seoul' 
+CELERY_TIMEZONE = 'Asia/Seoul'
 CELERY_TASK_TRACK_STARTED = True
 CELERY_TASK_TIME_LIMIT = 30 * 60  # 30 minutes
-CELERY_BROKER_URL = 'redis://localhost:6379/0'  # Redis 브로커 URL
-CELERY_RESULT_BACKEND = 'redis://localhost:6379/0' # 결과 백엔드
+CELERY_BROKER_URL = REDIS_URL
+CELERY_RESULT_BACKEND = REDIS_URL
 
 CELERY_BEAT_SCHEDULE = {
     'proactive-message-check-every-1-minutes': {
